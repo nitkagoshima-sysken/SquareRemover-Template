@@ -79,11 +79,11 @@ class Board {
 
 class XORShift {
     public:
-        static constexpr unsigned min(){ return 0u; }
-        static constexpr unsigned max(){ return UINT_MAX; }
+        static unsigned min(){ return 0u; }
+        static unsigned max(){ return UINT_MAX; }
         unsigned operator()(){ return random(); }
-        XORShift();
-        XORShift(unsigned seed){ w = seed; }
+        XORShift() { x = 123456789u; y = 362436069u; z = 521288629u; };
+        XORShift(unsigned seed) { x = 123456789u; y = 362436069u; z = 521288629u; w = seed; }
     private:
         unsigned x = 123456789u, y = 362436069u, z = 521288629u, w;
         unsigned random();
