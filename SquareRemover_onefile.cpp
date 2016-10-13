@@ -227,8 +227,8 @@ vector<vector<int>> makeBoard(int seed) {
             int cnt, cell;
             do {
                 cnt = 0;
-                cell = rand() % COLOR;
-                for (int i = 0; i < 4; ++i) {
+                cell = std::abs((int)rand()) % COLOR;
+                for (int i = 0; i < 3; ++i) {
                     if (checkAlign(Point(x + dx[i], y + dy[i]))) {
                         if (cell == board[y + dy[i]][x + dx[i]]) ++cnt;
                     }
@@ -250,7 +250,7 @@ vector<int> getNextTile(int seed, int turn) {
     int cnt, cell;
     do {
         cnt = 0;
-        cell = rand() % COLOR;
+        cell = std::abs((int)rand()) % COLOR;
         for (int i = 0; i < 3; ++i) if (cell == ret[i]) ++cnt;
     } while (cnt == 3);
     ret[3] = cell;
