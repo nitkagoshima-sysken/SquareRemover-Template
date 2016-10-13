@@ -78,15 +78,15 @@ class Board {
 };
 
 class XORShift {
+    private:
+        unsigned x = 123456789u, y = 362436069u, z = 521288629u, w;
+        unsigned random();
     public:
         static unsigned min(){ return 0u; }
         static unsigned max(){ return UINT_MAX; }
         unsigned operator()(){ return random(); }
-        XORShift() { x = 123456789u; y = 362436069u; z = 521288629u; };
+        XORShift() { std::random_device rd; x = 123456789u; y = 362436069u; z = 521288629u; w = w = rd(); }
         XORShift(unsigned seed) { x = 123456789u; y = 362436069u; z = 521288629u; w = seed; }
-    private:
-        unsigned x = 123456789u, y = 362436069u, z = 521288629u, w;
-        unsigned random();
 };
 
 bool checkAlign(Point);
@@ -196,12 +196,6 @@ vector<vector<int>> Board::getBoard() {
 Board::~Board() {
     vector<vector<int>> tmp;
     board.swap(tmp);
-}
-
-XORShift::XORShift() {
-    std::random_device rd;
-    w = rd();
-    random();
 }
 
 unsigned XORShift::random() {
