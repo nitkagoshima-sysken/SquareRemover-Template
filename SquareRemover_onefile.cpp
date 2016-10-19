@@ -66,12 +66,12 @@ class Board {
         void check();
     public:
         Board(int _seed = 0);
-        Board(int, std::vector<std::vector<int>>);
+        Board(int, int, int, std::vector<std::vector<int>>);
         bool swap(Point, Point);
         int getCell(Point);
+        int getTurn();
         int getScore();
         bool canSwap();
-        int getCnt();
         void printBoard(int printType = 0);
         std::vector<std::vector<int>> getBoard();
         ~Board();
@@ -105,9 +105,9 @@ Board::Board(int _seed) {
     board = makeBoard(_seed);
 }
 
-Board::Board(int _seed, std::vector<std::vector<int>> _board) {
-    turn  = 0;
-    score = 0;
+Board::Board(int _seed, int _turn, int _score, std::vector<std::vector<int>> _board) {
+    turn  = _turn;
+    score = _score;
     seed  = _seed;
     board = _board;
 }
@@ -134,7 +134,7 @@ bool Board::replace(Point pos) {
         if (!checkAlign(Point(pos.x + dx[i], pos.y + dy[i]))) return false;
         if (board[pos.y + dy[i]][pos.x + dx[i]] != color) return false;
     }
-    auto newTile = getNextTile(seed, getCnt());
+    auto newTile = getNextTile(seed, score + turn);
     for (int y = 0; y < 2; ++y) {
         for (int x = 0; x < 2; ++x) {
             board[pos.y + y][pos.x + x] = newTile[x + y * 2];
@@ -148,7 +148,6 @@ bool Board::replace(Point pos) {
 void Board::check() {
     static int dx[] = { 0, 1, 0, 1 };
     static int dy[] = { 0, 0, 1, 1 };
-    //cout << ".";
     for (int y = 0; y < BOARD_SIZE - 1; ++y) {
         for (int x = 0; x < BOARD_SIZE - 1; ++x) {
             int color = board[y][x];
@@ -168,11 +167,11 @@ int Board::getCell(Point pos) {
     return board[pos.y][pos.x];
 }
 
-int Board::getScore() {
-    return score;
+int Board::getTurn() {
+    return turn;
 }
 
-int Board::getCnt() {
+int Board::getScore() {
     return score;
 }
 
@@ -214,8 +213,8 @@ bool checkAlign(Point pos) {
 vector<vector<int>> makeBoard(int seed) {
     XORShift rand(seed);
     vector<vector<int>> board(BOARD_SIZE, vector<int>(BOARD_SIZE));
-    int dx[] = { -2, -1,  0, 0 };
-    int dy[] = { -2,  0, -1, 0 };
+    int dx[] = { -1, -1,  0, 0 };
+    int dy[] = { -1,  0, -1, 0 };
     for (int y = 0; y < BOARD_SIZE; ++y) {
         for (int x = 0; x < BOARD_SIZE; ++x) {
             int cnt, cell;
@@ -297,31 +296,31 @@ int main()
     int seed = 0;
     Board board(seed);
 
-    int dx[] = { 0, 1, 0, 1 };
-    int dy[] = { 0, 0, 1, 1 };
+    int dx[] = { 1, 0};
+    int dy[] = { 0, 1};
 
-    board.printBoard(COLOR_STRING);
-    cout << endl;
+    board.printBoard(); // for debug
+    cout << endl;       // for debug
 
     // 左上から交換可能な位置を全探索し、最初に見つけたスコアが向上する場所に置く
     // * あえて計算量やメモリ効率等を悪くしています
     //   みんな改善してね！の意
     // もしスコアが上がらない場合はランダムに交換する
-    int cnt = 0;
     Board *newBoard;
     while (board.canSwap()) {
         bool flag = false;
         for (int y = 0; !flag && y < BOARD_SIZE - 1; ++y) {
             for (int x = 0; !flag && x < BOARD_SIZE - 1; ++x) {
-                for (int i = 0; i < 4; ++i) {
+                for (int i = 0; i < 2; ++i) {
                     int nx = x + dx[i];
                     int ny = y + dy[i];
                     if (checkAlign(Point(nx, ny))) {
-                        newBoard = new Board(seed, board.getBoard());
+                        newBoard = new Board(seed, board.getTurn(), board.getScore(), board.getBoard());
                         newBoard->swap(Point(x, y), Point(nx, ny));
-                        if (newBoard->getScore() == 1) {
+                        if (newBoard->getScore() > board.getScore()) {
                             flag = true;
                             board.swap(Point(x, y), Point(nx, ny));
+                            cout << x << " " << y << " " << nx << " " << ny << endl;
                         }
                         delete newBoard;
                     }
@@ -332,12 +331,12 @@ int main()
             int x = rand() % (BOARD_SIZE - 1);
             int y = rand() % (BOARD_SIZE);
             board.swap(Point(x, y), Point(x + 1, y));
+            cout << x << " " << y << " " << x + 1 << " " << y << endl;
         }
-        cnt++;
     }
 
-    board.printBoard(COLOR_STRING);
-    cout << endl;
+    board.printBoard(); // for debug
+    cout << endl;       // for debug
     cout << board.getScore() << endl;
     return 0;
 }
