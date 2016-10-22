@@ -10,7 +10,7 @@ using namespace std;
 //                               Definision
 // ***********************************************************************
 #define BOARD_SIZE 10
-#define MAX_TURN   1000
+#define MAX_TURN   100
 #define COLOR      4
 
 const char colorChar[] = { 'R', 'Y', 'G', 'B' };
@@ -91,7 +91,7 @@ class XORShift {
 
 bool checkAlign(Point);
 std::vector<std::vector<int>> makeBoard(int);
-std::vector<int> getNextTile(int, int);
+std::vector<int> getNextTile(unsigned int, unsigned int);
 void printTile(std::vector<int> &, int printType = 0);
 void printCell(int cell, int printType = 0);
 // ***********************************************************************
@@ -233,14 +233,14 @@ vector<vector<int>> makeBoard(int seed) {
     return board;
 }
 
-vector<int> getNextTile(int seed, int turn) {
+vector<int> getNextTile(unsigned int seed, unsigned int turn) {
     vector<int> ret(4);
-    const int offset = 1234;
+    const unsigned int offset = 1234;
     XORShift rand(seed + turn * turn + offset);
     for (int i = 0; i < 3; ++i) {
-        ret[i] = rand() % COLOR;
+        ret[i] = std::abs((int)rand()) % COLOR;
     }
-    int cnt, cell;
+    unsigned int cnt, cell;
     do {
         cnt = 0;
         cell = std::abs((int)rand()) % COLOR;
